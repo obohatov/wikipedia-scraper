@@ -43,4 +43,4 @@ python main.py
 Now you have a JSON file <b>leaders_data.json</b> which includes crucial data about political leaders of different countries. This data is ready to be used for analysis or any other purpose.
 
 ## Visuals
-![It's True. It's on Wikipedia.](<div class="tenor-gif-embed" data-postid="6138435" data-share-method="host" data-aspect-ratio="1" data-width="100%"><a href="https://tenor.com/view/its-on-wikipedia-true-wikipedia-unreliable-gif-6138435">Its On Wikipedia True GIF</a>from <a href="https://tenor.com/search/its+on+wikipedia-gifs">Its On Wikipedia GIFs</a></div> <script type="text/javascript" async src="https://tenor.com/embed.js"></script>)
+![It's True. It's on Wikipedia.](./assets/its-on-wikipedia-true.gif)
