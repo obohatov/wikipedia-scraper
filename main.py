@@ -1,3 +1,5 @@
+from concurrent.futures import ProcessPoolExecutor
+
 from src.scraper import WikipediaScraper
 
 def main():
@@ -10,9 +12,9 @@ def main():
     """
     scraper = WikipediaScraper()
     countries = scraper.get_countries()
-    for country in countries: 
-        scraper.store_leader_data(country)
-    scraper.to_json_file("leaders_data.json")
+    with ProcessPoolExecutor() as executor:
+        executor.map(scraper.store_leader_data, countries)
+    scraper.to_json_file("leaders_data1.json")
 
 if __name__ == "__main__":
     main()
