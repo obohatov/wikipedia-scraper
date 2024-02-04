@@ -39,7 +39,7 @@ class WikipediaScraper:
             countries = response.json()            
             return countries
         else: 
-            raise Exception('Could not fetch countries')
+            raise Exception("Could not fetch countries")
 
     def get_leader(self, leader_id: str) -> dict:
         """
@@ -47,23 +47,23 @@ class WikipediaScraper:
         """
         leader_url = self.base_url + self.leader_endpoint
         response = requests.get(leader_url, 
-                                params={'leader_id': leader_id}, 
+                                params={"leader_id": leader_id}, 
                                 cookies=self.cookie
                                 )
         if response.status_code == 403:
             self.cookie = self.refresh_cookie()
             response = requests.get(
                 leader_url, 
-                params={'leader_id': leader_id}, 
+                params={"leader_id": leader_id}, 
                 cookies=self.cookie
                 )
         if response.status_code == 200:
             leader = response.json()
         else:
-            print(f'Response code: {response.status_code}')
-            print(f'Response text: {response.text}')
+            print(f"Response code: {response.status_code}")
+            print(f"Response text: {response.text}")
             raise Exception(
-                f'Could not fetch leader information with id {leader_id}'
+                f"Could not fetch leader information with id {leader_id}"
                 )
         return leader
 
@@ -75,20 +75,20 @@ class WikipediaScraper:
         leaders_url = self.base_url + self.leaders_endpoint
         response = requests.get(
             leaders_url, 
-            params={'country': country}, 
+            params={"country": country}, 
             cookies=self.cookie
             )
         if response.status_code == 403:
             self.cookie = self.refresh_cookie()
             response = requests.get(
                 leaders_url, 
-                params={'country': country}, 
+                params={"country": country}, 
                 cookies=self.cookie
                 )
         if response.status_code == 200:
             leaders = response.json()
         else:
-            raise Exception(f'Could not fetch leaders for {country}')
+            raise Exception(f"Could not fetch leaders for {country}")
         return leaders 
 
     def get_first_paragraph(self, wikipedia_url: str) -> str:
@@ -96,18 +96,18 @@ class WikipediaScraper:
         Extract the first paragraph of the leader's wikipedia page
         """
         response_wiki = requests.get(wikipedia_url)
-        soup = BeautifulSoup(response_wiki.text, 'html.parser')
+        soup = BeautifulSoup(response_wiki.text, "lxml")
 
-        bodyContent = soup.find('div', {'id': 'bodyContent'})
-        paragraphs = bodyContent.find_all('p')
+        bodyContent = soup.find("div", {"id": "bodyContent"})
+        paragraphs = bodyContent.find_all("p")
         for paragraph in paragraphs:
             if paragraph.find("b"):
                 first_paragraph = paragraph.text
                 break
                 
         first_paragraph = re.sub(
-            r'\{.*?\}|<.*?>|\[.*?\]', 
-            '', 
+            r"\{.*?\}|<.*?>|\[.*?\]", 
+            "", 
             first_paragraph
             )
         return first_paragraph.strip()
@@ -119,14 +119,14 @@ class WikipediaScraper:
         """
         leaders = self.get_leaders(country)
         for leader in leaders:
-            leader_info = self.get_leader(leader['id'])
+            leader_info = self.get_leader(leader["id"])
             wiki_intro = self.get_first_paragraph(
-                leader_info['wikipedia_url']
+                leader_info["wikipedia_url"]
                 )
-            self.leaders_data[leader['id']] = {
-                'first_name': leader_info['first_name'],
-                'last_name': leader_info['last_name'],
-                'wikipedia_intro': wiki_intro,
+            self.leaders_data[leader["id"]] = {
+                "first_name": leader_info["first_name"],
+                "last_name": leader_info["last_name"],
+                "wikipedia_intro": wiki_intro,
             }
 
     def to_json_file(self, filepath: str) -> None:
@@ -135,6 +135,6 @@ class WikipediaScraper:
         """
         json.dump(
             self.leaders_data, 
-            open(filepath, 'w'), 
+            open(filepath, "w"), 
             indent=4
             )
