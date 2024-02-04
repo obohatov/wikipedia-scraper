@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import re
-import pandas as pd
 
 
 class WikipediaScraper:
@@ -23,8 +22,19 @@ class WikipediaScraper:
         return (f"WikipediaScraper targeting API {self.base_url}, has "
                 f"scraped data for {len(self.leaders_data)} countries")
     
-    def get_response(self, url: str, params: dict = None) -> requests.Response:
-        response = self.session.get(url, params=params, cookies=self.cookie)
+    def get_response(self, 
+                     url: str, 
+                     params: dict = None
+                     ) -> requests.Response:
+        """
+        Send a GET request to the specified URL with optional parameters 
+        and cookies
+        """        
+        response = self.session.get(
+            url, 
+            params=params, 
+            cookies=self.cookie
+            )
         return response
 
     def refresh_cookie(self) -> object:
@@ -71,7 +81,6 @@ class WikipediaScraper:
             raise Exception(
                 f"Could not fetch leader information with id {leader_id}"
                 )
-        print(f"Leader data for {leader_id}: {leader}")
         return leader
 
     def get_leaders(self, country: str) -> None: 
@@ -119,30 +128,21 @@ class WikipediaScraper:
             )
         return first_paragraph.strip()
 
-    def store_leader_data(self, country: str) -> None:
+    def store_leader_data(self, country: str) -> dict:
         """
         Get information about the leaders for a specific country 
         and store in the leaders_data
         """
         leaders = self.get_leaders(country)
+        country_leaders_data = {}
         for leader in leaders:
             leader_info = self.get_leader(leader["id"])
             wiki_intro = self.get_first_paragraph(
                 leader_info["wikipedia_url"]
                 )
-            self.leaders_data[leader["id"]] = {
-                "first_name": leader_info["first_name"],
-                "last_name": leader_info["last_name"],
-                "wikipedia_intro": wiki_intro,
+            country_leaders_data[leader["id"]] = {
+            "first_name": leader_info["first_name"],
+            "last_name": leader_info["last_name"],
+            "wikipedia_intro": wiki_intro,
             }
-            print(f"Saved data for leader {leader['id']}")
-
-    def to_json_file(self, filepath: str) -> None:
-        """
-        Save the leaders' data to a JSON file
-        """
-        json.dump(
-            self.leaders_data, 
-            open(filepath, "w"), 
-            indent=4
-            )
+        return country_leaders_data
